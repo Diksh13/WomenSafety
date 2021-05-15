@@ -35,6 +35,7 @@ public class GeoLocation extends FragmentActivity implements OnMapReadyCallback 
     private DatabaseHelper databaseHelper;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,35 +75,36 @@ public class GeoLocation extends FragmentActivity implements OnMapReadyCallback 
         locationListener=new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                try{
-                    latLng=new LatLng(location.getLatitude(),location.getLongitude());
+                try {
+                    latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     mMap.addMarker(new MarkerOptions().position(latLng).title("My Location"));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    String myLatitude=String.valueOf(location.getLatitude());
-                    String myLongitude=String.valueOf(location.getLongitude());
+                    String myLatitude = String.valueOf(location.getLatitude());
+                    String myLongitude = String.valueOf(location.getLongitude());
 
-                    NumberList=databaseHelper.getAllNumbers();
-                    EmailList=databaseHelper.getAllEmail();
-                    String message = "maps.google.com/maps?q="+myLatitude+","+myLongitude;
+                        NumberList = databaseHelper.getAllNumbers();
+                        EmailList = databaseHelper.getAllEmail();
+                        String message = "maps.google.com/maps?q=" + myLatitude + "," + myLongitude;
 
-                    SmsManager smsManager = SmsManager.getDefault();
-                    for(String phoneNumber : NumberList) {
-                        smsManager.sendTextMessage(phoneNumber, null, message, null, null);
-                    }
+                        SmsManager smsManager = SmsManager.getDefault();
+                        for (String phoneNumber : NumberList) {
+                            smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+                        }
 
-                    Object[] to =  EmailList.toArray();
-                    String subject="emergency";
-                    Intent email = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                    for(int i = 0; i < to.length; i++){
-                        email.putExtra(android.content.Intent.EXTRA_EMAIL,
-                                EmailList.toArray(new String[EmailList.size()]));
-                    }
-                    email.putExtra(Intent.EXTRA_SUBJECT, subject);
-                    email.putExtra(Intent.EXTRA_TEXT, message);
-                    //need this to prompts email client only
-                    email.setType("message/rfc822");
-                    startActivity(Intent.createChooser(email, "Choose an Email client :"));
-            }
+                        Object[] to = EmailList.toArray();
+                        String subject = "emergency";
+                        Intent email = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                        for (int i = 0; i < to.length; i++) {
+                            email.putExtra(android.content.Intent.EXTRA_EMAIL,
+                                    EmailList.toArray(new String[EmailList.size()]));
+                        }
+                        email.putExtra(Intent.EXTRA_SUBJECT, subject);
+                        email.putExtra(Intent.EXTRA_TEXT, message);
+                        //need this to prompts email client only
+                        email.setType("message/rfc822");
+                        startActivity(Intent.createChooser(email, "Choose an Email client :"));
+
+                }
                 catch (Exception e){
                     e.printStackTrace();
                 }

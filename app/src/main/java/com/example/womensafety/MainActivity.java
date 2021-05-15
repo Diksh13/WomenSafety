@@ -3,18 +3,23 @@ package com.example.womensafety;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private Button btnadd,btnedit,btngeo;
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private double accelerationCurrentValue;
+    private double accelerationPreviousValue;
+
 
 
     @Override
@@ -24,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
         btnadd=findViewById(R.id.add);
         btnedit=findViewById(R.id.edit);
         btngeo=findViewById(R.id.geo);
+
+
+
         btnadd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -31,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
 
         btnedit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,23 +58,48 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//
-//        btnEmail.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-//                intent.setType("text/plain");
-//                final PackageManager pm = getPackageManager();
-//                final List<ResolveInfo> matches = pm.queryIntentActivities(intent, 0);
-//                ResolveInfo best = null;
-//                for (final ResolveInfo info : matches)
-//                    if (info.activityInfo.packageName.endsWith(".gm") ||
-//                            info.activityInfo.name.toLowerCase().contains("gmail")) best = info;
-//                if (best != null)
-//                    intent.setClassName(best.activityInfo.packageName,best.activityInfo.name);
-//
-//                startActivity(intent);
-//            }
-//        });
+        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
     }
+
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(sensorEventListener, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(sensorEventListener);
+    }
+
+
+
+    private SensorEventListener sensorEventListener=new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) {
+
+            float x=sensorEvent.values[0];
+            float y=sensorEvent.values[1];
+            float z=sensorEvent.values[2];
+            accelerationCurrentValue=(int)Math.sqrt((x*x+y*y+z*z));
+            double changeInAcceleration = (int)Math.abs(accelerationCurrentValue - accelerationPreviousValue);
+            accelerationPreviousValue=(int)accelerationCurrentValue;
+            if(changeInAcceleration > 15)
+            {
+                Intent intent = new Intent(MainActivity.this,GeoLocation.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
+
+
 }

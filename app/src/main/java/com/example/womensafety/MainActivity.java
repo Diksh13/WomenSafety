@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
             if(changeInAcceleration > 15)
             {
                 Intent intent = new Intent(MainActivity.this,GeoLocation.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
 

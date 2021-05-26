@@ -52,7 +52,7 @@
         android:id="@+id/geo"
         android:layout_width="220dp"
         android:layout_height="68dp"
-        android:text="MY GEO LOCATION"
+        android:text="Emergency"
         app:backgroundTint="#E91E25"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

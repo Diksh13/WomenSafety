@@ -18,7 +18,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_EMAIL = "gemail";
 
 
-    /*CREATE TABLE students ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone_number TEXT......);*/
     private static final String CREATE_TABLE_WOMENSAFETY
             = "CREATE TABLE "
             + TABLE_USER + "(" + KEY_ID
@@ -43,14 +42,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     public long addUserDetail(String name, String gmob1, String gmob2, String gemail) {
         SQLiteDatabase db = this.getWritableDatabase();
-// Creating content values
+
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, name);
         values.put(KEY_MOB1, gmob1);
         values.put(KEY_MOB2, gmob2);
         values.put(KEY_EMAIL, gemail);
 
-// insert row in women_safety table
         long insert = db.insert(TABLE_USER,
                 null, values);
         return insert;
@@ -63,7 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String selectQuery = "SELECT * FROM " + TABLE_USER;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-// looping through all rows and adding to list
+
         if (c.moveToFirst()) {
             do {
                 UserModel userModel = new UserModel();
@@ -113,18 +111,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int updateUser(int id, String name, String gmob1, String gmob2, String gemail) {
         SQLiteDatabase db = this.getWritableDatabase();
-// Creating content values
+
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, name);
         values.put(KEY_MOB1, gmob1);
         values.put(KEY_MOB2, gmob2);
         values.put(KEY_EMAIL, gemail);
-// update row in women_safety table base on students.is value
         return db.update(TABLE_USER, values, KEY_ID + " = ?",
                 new String[]{String.valueOf(id)});
     }
     public void deleteUSer(int id) {
-// delete row in women_safety table based on id
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_USER, KEY_ID + " = ?",
                 new String[]{String.valueOf(id)});

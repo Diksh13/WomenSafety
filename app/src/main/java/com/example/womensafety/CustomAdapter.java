@@ -48,7 +48,15 @@ public class CustomAdapter extends BaseAdapter {
         }
         holder.tvname.setText("Name: "+userModelArrayList.get(position).getName());
         holder.tvm1.setText("Mobile Number 1: "+userModelArrayList.get(position).getGmob1());
-        holder.tvm2.setText("Mobile Number 2: "+userModelArrayList.get(position).getGmob2());
+        if (!(userModelArrayList.get(position).getGmob2().toString().length()==0)){
+        holder.tvm2.setText("Mobile Number 2: "+userModelArrayList.get(position).getGmob2());}
+        else
+        {
+            holder.tvm2.setVisibility(View.GONE);
+        }
+
+
+
         holder.tvemail.setText("Email: "+userModelArrayList.get(position).getGemail());
 
         return convertView;

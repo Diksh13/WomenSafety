@@ -20,7 +20,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 public class GeoLocation extends FragmentActivity implements OnMapReadyCallback {
 
@@ -36,6 +40,7 @@ public class GeoLocation extends FragmentActivity implements OnMapReadyCallback 
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +52,8 @@ public class GeoLocation extends FragmentActivity implements OnMapReadyCallback 
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
-        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
+//        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
+//        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS}, PackageManager.PERMISSION_GRANTED);
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.INTERNET},PackageManager.PERMISSION_GRANTED);
 
@@ -67,10 +72,10 @@ public class GeoLocation extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//         Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         locationListener=new LocationListener() {
             @Override
@@ -78,31 +83,37 @@ public class GeoLocation extends FragmentActivity implements OnMapReadyCallback 
                 try {
                     latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     mMap.addMarker(new MarkerOptions().position(latLng).title("My Location"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,17));
                     String myLatitude = String.valueOf(location.getLatitude());
                     String myLongitude = String.valueOf(location.getLongitude());
 
                         NumberList = databaseHelper.getAllNumbers();
                         EmailList = databaseHelper.getAllEmail();
-                        String message = "maps.google.com/maps?q=" + myLatitude + "," + myLongitude;
+                        java.util.Date date = new java.util.Date();
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
-                        SmsManager smsManager = SmsManager.getDefault();
+                    String message = "Emergency : maps.google.com/maps?q=" + myLatitude + "," + myLongitude +"\n Date : "+ java.time.LocalDate.now() +"\n Time : "+ sdf.format(date);
+
+                    Object[] to = EmailList.toArray();
+                    String subject = "Emergency";
+                    Intent email = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                    for (int i = 0; i < to.length; i++) {
+                        email.putExtra(android.content.Intent.EXTRA_EMAIL,
+                                EmailList.toArray(new String[EmailList.size()]));
+                    }
+                    email.putExtra(Intent.EXTRA_SUBJECT, subject);
+                    email.putExtra(Intent.EXTRA_TEXT, message);
+                    //need this to prompts email client only
+                    email.setType("message/rfc822");
+                    startActivity(Intent.createChooser(email, "Choose an Email client :"));
+
+
+                    SmsManager smsManager = SmsManager.getDefault();
                         for (String phoneNumber : NumberList) {
-                            smsManager.sendTextMessage(phoneNumber, null, message, null, null);
-                        }
+                                smsManager.sendTextMessage(phoneNumber, null, message, null, null);
 
-                        Object[] to = EmailList.toArray();
-                        String subject = "emergency";
-                        Intent email = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                        for (int i = 0; i < to.length; i++) {
-                            email.putExtra(android.content.Intent.EXTRA_EMAIL,
-                                    EmailList.toArray(new String[EmailList.size()]));
                         }
-                        email.putExtra(Intent.EXTRA_SUBJECT, subject);
-                        email.putExtra(Intent.EXTRA_TEXT, message);
-                        //need this to prompts email client only
-                        email.setType("message/rfc822");
-                        startActivity(Intent.createChooser(email, "Choose an Email client :"));
 
                 }
                 catch (Exception e){

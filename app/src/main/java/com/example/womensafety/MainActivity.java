@@ -1,7 +1,5 @@
 package com.example.womensafety;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -20,8 +18,6 @@ public class MainActivity extends AppCompatActivity {
     private double accelerationCurrentValue;
     private double accelerationPreviousValue;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +26,6 @@ public class MainActivity extends AppCompatActivity {
         btnedit=findViewById(R.id.edit);
         btngeo=findViewById(R.id.geo);
 
-
-
         btnadd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
 
         btnedit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         mSensorManager.unregisterListener(sensorEventListener);
     }
-
-
 
     private SensorEventListener sensorEventListener=new SensorEventListener() {
         @Override

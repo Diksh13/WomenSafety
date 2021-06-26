@@ -15,7 +15,8 @@
         android:gravity="center"
         android:text="Guardian Details"
         android:textColor="#DD3023"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
         android:id="@+id/lv"
